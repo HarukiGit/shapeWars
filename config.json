@@ -1,0 +1,112 @@
+{
+    "screen": {
+        "width": {
+            "value": 1920,
+            "min": 100,
+            "max": 1920,
+            "comment": "画面幅"
+        },
+        "height": {
+            "value": 1080,
+            "min": 100,
+            "max": 1080,
+            "comment": "画面高さ"
+        },
+        "display_scale": {
+            "value": 1,
+            "min": 1,
+            "max": 3,
+            "comment": "ピクセル倍率"
+        },
+        "fps": {
+            "value": 60,
+            "min": 30,
+            "max": 144,
+            "comment": "リフレッシュレート"
+        }
+    },
+    "player": {
+        "radius": {
+            "value": 10.0,
+            "min": 1.0,
+            "max": 50.0,
+            "comment": "当たり判定(半径)"
+        },
+        "hp": {
+            "value": 100,
+            "min": 0,
+            "max": 100,
+            "comment": "ヒットポイント"
+        }
+    },
+    "enemy": {
+        "speed": {
+            "value": 0.5,
+            "min": 0.1,
+            "max": 500.0,
+            "comment": "スピード"
+        },
+        "damage": {
+            "value": 10,
+            "min": 0,
+            "max": 100,
+            "comment": "ダメージ"
+        },
+        "radius": {
+            "value": 5.66,
+            "min": 1.0,
+            "max": 50.0,
+            "comment": "当たり判定(半径)"
+        },
+        "hp": {
+            "value": 100,
+            "min": 0,
+            "max": 100,
+            "comment": "ヒットポイント"
+        },
+        "spawn_interval_range": {
+            "value": 1,
+            "min": 0,
+            "max": 10,
+            "comment": "スポーン間隔[s]"
+        }
+    },
+    "bullet": {
+        "speed": {
+            "value": 10.0,
+            "min": 0.1,
+            "max": 1000.0,
+            "comment": "スピード"
+        },
+        "radius": {
+            "value": 2.0,
+            "min": 0.1,
+            "max": 10.0,
+            "comment": "当たり判定(半径)"
+        },
+        "damage": {
+            "value": 10,
+            "min": 0,
+            "max": 100,
+            "comment": "ダメージ"
+        },
+        "fire_rate": {
+            "value": 0.05,
+            "min": 0.1,
+            "max": 5.0,
+            "comment": "発射レート[s]"
+        },
+        "fire_diffusion": {
+            "value": 8.0,
+            "min": 0.0,
+            "max": 360.0,
+            "comment": "拡散範囲"
+        },
+        "fire_range": {
+            "value": 800.0,
+            "min": 10.0,
+            "max": 5000.0,
+            "comment": "射程距離"
+        }
+    }
+}
