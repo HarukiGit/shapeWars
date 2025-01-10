@@ -58,14 +58,14 @@ class App:
             display_scale=SCREEN_DIDPLAYSCALE,
             fps=SCREEN_FPS,
         )
-        self.screen_x = MAP_WIDTH // 2
-        self.screen_y = MAP_HEIGHT // 2
+        self.screen_x = MAP_WIDTH // 2 - SCREEN_WIDTH // 2
+        self.screen_y = MAP_HEIGHT // 2 - SCREEN_HEIGHT // 2
         self.random_create = 0
         self.players = []
         self.players.append(
             Player(
-                SCREEN_WIDTH // 2,
-                SCREEN_HEIGHT // 2 - 100,
+                MAP_WIDTH // 2,
+                MAP_HEIGHT // 2,
                 PLAYER_RADIUS,
                 PLAYER_HP,
                 BULLET_FIRE_RATE,
@@ -78,8 +78,8 @@ class App:
         )
         self.players.append(
             Player(
-                SCREEN_WIDTH // 2 + PLAYER_RADIUS * 2 - 200,
-                SCREEN_HEIGHT // 2 + 200,
+                MAP_WIDTH // 2 + PLAYER_RADIUS * 2 - 200,
+                MAP_HEIGHT // 2 + 200,
                 PLAYER_RADIUS,
                 PLAYER_HP,
                 MACHINE_GUN_FIRE_RATE,
@@ -92,8 +92,8 @@ class App:
         )
         self.players.append(
             Player(
-                SCREEN_WIDTH // 2 - PLAYER_RADIUS * 2 + 200,
-                SCREEN_HEIGHT // 2 + 200,
+                MAP_WIDTH // 2 - PLAYER_RADIUS * 2 + 200,
+                MAP_HEIGHT // 2 + 200,
                 PLAYER_RADIUS,
                 PLAYER_HP,
                 CANNON_FIRE_RATE,
@@ -113,9 +113,34 @@ class App:
 
     def update(self):
 
+        if pyxel.btn(pyxel.KEY_W):
+            self.screen_y -= 10
+        if pyxel.btn(pyxel.KEY_S):
+            self.screen_y += 10
+        if pyxel.btn(pyxel.KEY_A):
+            self.screen_x -= 10
+        if pyxel.btn(pyxel.KEY_D):
+            self.screen_x += 10
+
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT, 60):
+            self.players.append(
+                Player(
+                    pyxel.mouse_x + self.screen_x,
+                    pyxel.mouse_y + self.screen_y,
+                    PLAYER_RADIUS,
+                    PLAYER_HP,
+                    BULLET_FIRE_RATE,
+                    BULLET_RADIUS,
+                    BULLET_SPEED,
+                    BULLET_FIRE_DIFFUSION,
+                    BULLET_FIRE_RANGE,
+                    BULLET_DAMAGE,
+                )
+            )
+
         for player in self.players:
             # プレイヤーの更新
-            player.update(self.bullets, self.enemies)
+            player.update(self.bullets, self.enemies, self.screen_x, self.screen_y)
         # 非アクティブなプレイヤーを削除
         self.players = [player for player in self.players if player.active]
 
@@ -127,18 +152,17 @@ class App:
             spawn_frame = pyxel.rndi(0, 3)
             if spawn_frame == 0:
                 spawan_x = 0
-                spawan_y = pyxel.rndi(0, SCREEN_HEIGHT)
+                spawan_y = pyxel.rndi(0, MAP_HEIGHT)
             elif spawn_frame == 1:
-                spawan_x = pyxel.rndi(0, SCREEN_WIDTH)
+                spawan_x = pyxel.rndi(0, MAP_WIDTH)
                 spawan_y = 0
             elif spawn_frame == 2:
-                spawan_x = SCREEN_WIDTH
-                spawan_y = pyxel.rndi(0, SCREEN_HEIGHT)
+                spawan_x = MAP_WIDTH
+                spawan_y = pyxel.rndi(0, MAP_HEIGHT)
             elif spawn_frame == 3:
-                spawan_x = pyxel.rndi(0, SCREEN_WIDTH)
-                spawan_y = SCREEN_HEIGHT
+                spawan_x = pyxel.rndi(0, MAP_WIDTH)
+                spawan_y = MAP_HEIGHT
 
-            randomy = pyxel.rndi(0, SCREEN_HEIGHT)
             self.enemies.append(
                 Enemy(
                     spawan_x,
@@ -153,14 +177,14 @@ class App:
             self.start_time = time.time()
         # 敵の更新
         for enemy in self.enemies:
-            enemy.update(self.players)
+            enemy.update(self.players, self.screen_x, self.screen_y)
 
         # 非アクティブな敵を削除
         self.enemies = [enemy for enemy in self.enemies if enemy.active]
 
         # 弾の更新
         for bullet in self.bullets:
-            bullet.update(self.enemies)
+            bullet.update(self.enemies, self.screen_x, self.screen_y)
 
         # 非アクティブな弾を削除
         self.bullets = [bullet for bullet in self.bullets if bullet.active]
@@ -169,13 +193,6 @@ class App:
         # 画面のクリア
         pyxel.cls(0)
         for player in self.players:
-            pyxel.rectb(
-                player.x - player.radius,
-                player.y - player.radius,
-                player.radius * 2,
-                player.radius * 2,
-                7,
-            )
             # プレイヤーの描画
             player.draw(self.enemies)
 
@@ -186,6 +203,15 @@ class App:
         # 弾の描画
         for bullet in self.bullets:
             bullet.draw()
+
+        buttonSize = 50
+        pyxel.rect(
+            SCREEN_WIDTH - buttonSize,
+            SCREEN_HEIGHT - buttonSize,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            7,
+        )
 
 
 # ゲームの実行

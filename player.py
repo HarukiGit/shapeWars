@@ -35,7 +35,9 @@ class Player:
 
         self.active = True
 
-    def update(self, bullets, enemies):
+    def update(self, bullets, enemies, screen_x, screen_y):
+        self.screen_x = screen_x
+        self.screen_y = screen_y
         self.rate_end_time = time.time()
         self.rate_time = self.rate_end_time - self.rate_start_time
         # 弾を発射
@@ -60,10 +62,10 @@ class Player:
 
     def draw(self, enemies):
         # プレイヤーの描画（円）
-        pyxel.circ(self.x, self.y, self.radius, 11)
+        pyxel.circ(self.x - self.screen_x, self.y - self.screen_y, self.radius, 11)
         pyxel.rect(
-            self.x - self.radius,
-            self.y + self.radius + 10,
+            self.x - self.screen_x - self.radius,
+            self.y - self.screen_y + self.radius + 10,
             self.radius * 2 * (self.hp / self.hp_init),
             5,
             8,
@@ -71,13 +73,18 @@ class Player:
 
         enemies_distance = []
         for index, enemy in enumerate(enemies):
-            distance = calculate.distance(self.x, self.y, enemy.x, enemy.y)
+            distance = calculate.distance(
+                self.x - self.screen_x,
+                self.y - self.screen_y,
+                enemy.x - self.screen_x,
+                enemy.y - self.screen_y,
+            )
             enemies_distance.append(distance)
         self.min_distance_index = enemies_distance.index(min(enemies_distance))
         pyxel.line(
-            enemies[self.min_distance_index].x,
-            enemies[self.min_distance_index].y,
-            self.x,
-            self.y,
+            enemies[self.min_distance_index].x - self.screen_x,
+            enemies[self.min_distance_index].y - self.screen_y,
+            self.x - self.screen_x,
+            self.y - self.screen_y,
             4,
         )

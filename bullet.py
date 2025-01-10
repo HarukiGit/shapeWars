@@ -27,7 +27,9 @@ class Bullet:
         h = self.y - enemies[self.min_distance_index].y
         self.angle = pyxel.atan2(h, w) + self.fire_diffusion
 
-    def update(self, enemies):
+    def update(self, enemies, screen_x, screen_y):
+        self.screen_x = screen_x
+        self.screen_y = screen_y
         # 弾の移動
 
         self.x += self.speed * pyxel.cos(self.angle) * -1
@@ -56,5 +58,5 @@ class Bullet:
 
     def draw(self):
         # 弾の描画（円）
-        pyxel.circ(self.x, self.y, self.radius, 7)
-        pyxel.circ(self.x2, self.y2, self.radius, 7)
+        pyxel.circ(self.x - self.screen_x, self.y - self.screen_y, self.radius, 7)
+        pyxel.circ(self.x2 - self.screen_x, self.y2 - self.screen_y, self.radius, 7)

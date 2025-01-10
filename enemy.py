@@ -14,7 +14,9 @@ class Enemy:
         self.active = True
         self.damage = damage
 
-    def update(self, players):
+    def update(self, players, screen_x, screen_y):
+        self.screen_x = screen_x
+        self.screen_y = screen_y
         players_distance = []
         for index, player in enumerate(players):
             distance = calculate.distance(self.x, self.y, player.x, player.y)
@@ -40,12 +42,18 @@ class Enemy:
 
     def draw(self, players):
         # 弾の描画（円）
-        pyxel.circ(self.x, self.y, self.radius, 7)
+        pyxel.circ(self.x - self.screen_x, self.y - self.screen_y, self.radius, 7)
         # フォントを指定
         writer = puf.Writer("misaki_gothic.ttf")
         # draw(x座標, y座標, テキスト, フォントサイズ, 文字の色(16:モザイク))
         # 背景色はデフォルト値(-1:透明)
-        writer.draw(self.x - 20 / 2, self.y + 20, f"{self.hp}", 20, 7)
+        writer.draw(
+            self.x - self.screen_x - 20 / 2,
+            self.y - self.screen_y + 20,
+            f"{self.hp}",
+            20,
+            7,
+        )
 
         """pyxel.line(
             players[self.min_distance_index].x,
