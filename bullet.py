@@ -22,16 +22,18 @@ class Bullet:
         for index, enemy in enumerate(enemies):
             distance = calculate.distance(self.x, self.y, enemy.x, enemy.y)
             enemies_distance.append(distance)
-        min_distance_index = enemies_distance.index(min(enemies_distance))
-        w = self.x - enemies[min_distance_index].x
-        h = self.y - enemies[min_distance_index].y
+        self.min_distance_index = enemies_distance.index(min(enemies_distance))
+        w = self.x - enemies[self.min_distance_index].x
+        h = self.y - enemies[self.min_distance_index].y
         self.angle = pyxel.atan2(h, w) + self.fire_diffusion
 
     def update(self, enemies):
         # 弾の移動
+
         self.x += self.speed * pyxel.cos(self.angle) * -1
         self.y += self.speed * pyxel.sin(self.angle) * -1
-
+        self.x2 = self.x + self.radius * 2 * pyxel.cos(self.angle)
+        self.y2 = self.y + self.radius * 2 * pyxel.sin(self.angle)
         # 被弾処理
         # 敵と弾の距離よりそれぞれの当たり判定円の半径の和が大きければ被弾
         for enemy in enemies:
@@ -39,8 +41,13 @@ class Bullet:
             if d < self.radius + enemy.radius:
                 enemy.hp -= self.damage
                 self.active = False
+        for enemy in enemies:
+            d = calculate.distance(self.x2, self.y2, enemy.x, enemy.y)
+            if d < self.radius + enemy.radius:
+                enemy.hp -= self.damage
+                self.active = False
 
-        # 画面外に出たら非アクティブに
+        # 射程外出たら非アクティブに
         if (
             calculate.distance(self.x, self.y, self.x_init, self.y_init)
             > self.fire_range
@@ -50,3 +57,4 @@ class Bullet:
     def draw(self):
         # 弾の描画（円）
         pyxel.circ(self.x, self.y, self.radius, 7)
+        pyxel.circ(self.x2, self.y2, self.radius, 7)

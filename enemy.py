@@ -15,21 +15,30 @@ class Enemy:
         self.damage = damage
 
     def update(self, players):
-        for player in players:
-            EtoP_distance, h, w = calculate.distance(
-                self.x, self.y, player.x, player.y, hw=True
-            )
-            self.x -= self.speed * (w / EtoP_distance)
-            self.y -= self.speed * (h / EtoP_distance)
-            if EtoP_distance < player.radius:
-                player.hp -= self.damage
-                self.active = False
+        players_distance = []
+        for index, player in enumerate(players):
+            distance = calculate.distance(self.x, self.y, player.x, player.y)
+            players_distance.append(distance)
+        self.min_distance_index = players_distance.index(min(players_distance))
 
-        # 非アクティブ処理
-        if self.hp < 0:
+        EtoP_distance, h, w = calculate.distance(
+            self.x,
+            self.y,
+            players[self.min_distance_index].x,
+            players[self.min_distance_index].y,
+            hw=True,
+        )
+        self.x -= self.speed * (w / EtoP_distance)
+        self.y -= self.speed * (h / EtoP_distance)
+        if EtoP_distance < players[self.min_distance_index].radius:
+            players[self.min_distance_index].hp -= self.damage
             self.active = False
 
-    def draw(self):
+        # 非アクティブ処理
+        if self.hp <= 0:
+            self.active = False
+
+    def draw(self, players):
         # 弾の描画（円）
         pyxel.circ(self.x, self.y, self.radius, 7)
         # フォントを指定
@@ -37,3 +46,11 @@ class Enemy:
         # draw(x座標, y座標, テキスト, フォントサイズ, 文字の色(16:モザイク))
         # 背景色はデフォルト値(-1:透明)
         writer.draw(self.x - 20 / 2, self.y + 20, f"{self.hp}", 20, 7)
+
+        """pyxel.line(
+            players[self.min_distance_index].x,
+            players[self.min_distance_index].y,
+            self.x,
+            self.y,
+            4,
+        )"""
