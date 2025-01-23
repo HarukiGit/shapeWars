@@ -3,39 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Run External Python File</title>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"></script>
+    <title>Phaser Game with External Files</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <h1>Run External Python File</h1>
-    <p id="output">Checking file...</p>
     <script>
-        async function checkAndRunPythonFile() {
-            const pyodide = await loadPyodide(); // Pyodideをロード
-
-            try {
-                // 外部Pythonファイルの存在を確認
-                const response = await fetch("script.py", { cache: "no-store" });
-                if (!response.ok) throw new Error("Python file not found or inaccessible.");
-
-                // Pythonファイルの内容を取得
-                const pythonCode = await response.text();
-                console.log("Python file content:", pythonCode); // デバッグ用ログ
-
-                // Pythonコードを実行
-                const result = await pyodide.runPythonAsync(pythonCode);
-
-                // 実行結果を表示
-                document.getElementById("output").innerText = `Execution result: ${result}`;
-            } catch (error) {
-                // エラー処理
-                document.getElementById("output").innerText = `Error: ${error.message}`;
-                console.error(error);
+        // Phaserゲーム設定
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            backgroundColor: '#3498db',
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
             }
+        };
+
+        const game = new Phaser.Game(config);
+
+        let player;
+        let cursors;
+
+        function preload() {
+            // ローカルの assets ディレクトリから画像を読み込む
+            this.load.image('sky', 'assets/kousei.png');
+            this.load.image('player', 'assets/SideBar.png');
         }
 
-        // ページ読み込み時にPythonファイルを確認して実行
-        window.onload = checkAndRunPythonFile;
+        function create() {
+            // 背景を追加
+            this.add.image(400, 300, 'sky');
+
+            // プレイヤーを追加
+            player = this.physics.add.sprite(400, 300, 'player');
+            player.setCollideWorldBounds(true);
+
+            // キーボード入力
+            cursors = this.input.keyboard.createCursorKeys();
+        }
+
+        function update() {
+            // プレイヤーの移動
+            if (cursors.left.isDown) {
+                player.setVelocityX(-200);
+            } else if (cursors.right.isDown) {
+                player.setVelocityX(200);
+            } else {
+                player.setVelocityX(0);
+            }
+
+            if (cursors.up.isDown) {
+                player.setVelocityY(-200);
+            } else if (cursors.down.isDown) {
+                player.setVelocityY(200);
+            } else {
+                player.setVelocityY(0);
+            }
+        }
     </script>
 </body>
 </html>
